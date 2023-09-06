@@ -40,7 +40,7 @@ public class GroupServiceImpl implements GroupService {
 		Group group = new Group(groupName);
 		groupDao.save(group);
 		
-		return new GroupResponse(group, RtnCode.DATA_EXISTED.getMessage());
+		return new GroupResponse(group, RtnCode.SUCCESSFUL.getMessage());
 	}
 
 	
@@ -57,6 +57,11 @@ public class GroupServiceImpl implements GroupService {
 		if(!oldGroupOp.isPresent()) {
 			return new GroupResponse(RtnCode.NOT_FOUND.getMessage());
 		}
+		// 新しいグループ名称　存在しているかどうか
+		Optional<Group> newGroupOp = groupDao.findById(newGroupName);
+		if(newGroupOp.isPresent()) {
+			return new GroupResponse(RtnCode.DATA_EXISTED.getMessage());
+		}
 		Group updateGroup = oldGroupOp.get();
 		
 		// 編集したいグループ名称　新しい名称の保存
@@ -69,38 +74,32 @@ public class GroupServiceImpl implements GroupService {
 	// グループ分類の削除
 	@Override
 	public GroupResponse deleteGroup(List<Group> deleteGroupList) {
-		// 削除したいグループ名称　入力したかどうか
+		// 
+		List<Group> allGroupList = groupDao.findAll();
+		// 
+		List<Group> canDeleteGroupList = new ArrayList<>();
+		// 
 		if(deleteGroupList.size() == 0) {
 			return new GroupResponse(RtnCode.CANNOT_EMPTY.getMessage());
 		}
 		
 		// 削除したいグループ　存在しているかどうか
-		List<Group> deleteList = new ArrayList<>();
-		 List<Group> allGroupList = groupDao.findAll();
-		 for(Group deleteGroup : deleteGroupList) {
-			 if(allGroupList.contains(deleteGroup)) {
-				 deleteList.add(deleteGroup);
-			 }
-		 }
-		if(deleteList.size() != deleteGroupList.size()) {
+		for(Group deleteGroup : deleteGroupList) {
+			for(Group oldGroup : allGroupList) {
+				if(deleteGroup.getGroupName().equals(oldGroup.getGroupName())) {
+					if(oldGroup.getNewsAmount() != 0) {
+						return new GroupResponse(RtnCode.INCORRECT.getMessage());
+					}
+					canDeleteGroupList.add(oldGroup);
+				}
+			}
+		}
+		if(canDeleteGroupList.size() != deleteGroupList.size() || canDeleteGroupList.size() == 0) {
 			return new GroupResponse(RtnCode.NOT_FOUND.getMessage());
 		}
 		
-		// 削除したいグループ分類　文章数0かどうか
-		for(Group deleteGroup : deleteList) {
-			if(deleteGroup.getNewsAmount() != 0) {
-				return new GroupResponse(RtnCode.INCORRECT.getMessage());
-			}
-		}
-		
-		// 削除したいグループ分類名称をリストに入れる
-		List<String> deleteGroupName = new ArrayList<>();
-		for(Group deleteGroup : deleteList) {
-			deleteGroupName.add(deleteGroup.getGroupName());
-		}
-		
 		// データベースへの削除
-		groupDao.deleteAllById(deleteGroupName);
+		groupDao.deleteAll(canDeleteGroupList);
 		
 		return new GroupResponse(RtnCode.SUCCESSFUL.getMessage());
 	}
