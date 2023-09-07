@@ -8,6 +8,8 @@ public class GroupResponse {
 	
 	private Group group;
 	
+	private List<Group> groupList;
+	
 	private String message;
 	
 	// ----------------------------
@@ -29,6 +31,12 @@ public class GroupResponse {
 		super();
 		this.message = message;
 	}
+
+	public GroupResponse(List<Group> groupList, String message) {
+		super();
+		this.groupList = groupList;
+		this.message = message;
+	}
 	
 	// ----------------------------
 
@@ -40,6 +48,14 @@ public class GroupResponse {
 		this.group = group;
 	}
 
+	public List<Group> getGroupList() {
+		return groupList;
+	}
+	
+	public void setGroupList(List<Group> groupList) {
+		this.groupList = groupList;
+	}
+
 	public String getMessage() {
 		return message;
 	}
@@ -47,6 +63,7 @@ public class GroupResponse {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
 	
 	
 

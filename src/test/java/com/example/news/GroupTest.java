@@ -37,15 +37,15 @@ public class GroupTest {
 	
 	@Test
 	public void updateGroupTest() {
-		GroupResponse res1 = gService.updateGroupName(" ", "CCC");
+		GroupResponse res1 = gService.updateGroupName(null, "CCC");
 		System.out.println(res1.getMessage());
-		GroupResponse res2 = gService.updateGroupName("c", " ");
+		GroupResponse res2 = gService.updateGroupName(0, "aa");
 		System.out.println(res2.getMessage());
-		GroupResponse res3 = gService.updateGroupName("ddd", "DDD");
+		GroupResponse res3 = gService.updateGroupName(1, "");
 		System.out.println(res3.getMessage());
-		GroupResponse res4 = gService.updateGroupName("AAA", "BBB");
+		GroupResponse res4 = gService.updateGroupName(1, "ayy");
 		System.out.println(res4.getMessage());
-		GroupResponse res5 = gService.updateGroupName("ZZZ", "BBB");
+		GroupResponse res5 = gService.updateGroupName(2, "CCA");
 		System.out.println(res5.getMessage());
 	}
 	
@@ -57,12 +57,18 @@ public class GroupTest {
 		List<Group> group2 = new ArrayList<>(Arrays.asList(new Group("")));
 		GroupResponse res2 = gService.deleteGroup(group2);
 		System.out.println(res2.getMessage());
-		List<Group> group3 = new ArrayList<>(Arrays.asList(new Group("ERR")));
+		List<Group> group3 = new ArrayList<>(Arrays.asList(new Group("ERR"), new Group("CCA")));
 		GroupResponse res3 = gService.deleteGroup(group3);
 		System.out.println(res3.getMessage());
-		List<Group> group4 = new ArrayList<>(Arrays.asList(new Group("BBB")));
+		List<Group> group4 = new ArrayList<>(Arrays.asList(new Group("CCA")));
 		GroupResponse res4 = gService.deleteGroup(group4);
 		System.out.println(res4.getMessage());
 	}
 
+	@Test
+	public void findAllGroupTest() {
+		GroupResponse res1 = gService.getAllGroup();
+		System.out.println(res1.getMessage());
+	}
+	
 }

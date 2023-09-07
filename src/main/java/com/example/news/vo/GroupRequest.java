@@ -6,6 +6,9 @@ import com.example.news.entity.Group;
 
 public class GroupRequest {
 	
+	// グループ(分類)の番号
+	private Integer groupNumber;
+	
 	// グループ(分類)の名称
 	private String groupName;
 
@@ -24,17 +27,21 @@ public class GroupRequest {
 	
 	// ------------------------------
 
-	public GroupRequest(String groupName, int newsAmount) {
+	public GroupRequest(Integer groupNumber, String groupName, List<Group> groupList, int newsAmount) {
 		super();
+		this.groupNumber = groupNumber;
 		this.groupName = groupName;
+		this.groupList = groupList;
 		this.newsAmount = newsAmount;
 	}
+	
 	
 	// ------------------------------
 
 	public String getGroupName() {
 		return groupName;
 	}
+
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;

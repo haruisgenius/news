@@ -11,9 +11,12 @@ public interface GroupService {
 	public GroupResponse createGroup(String groupName);
 	
 	// グループ分類名称の編集
-	public GroupResponse updateGroupName(String oldGroupName, String newGroupName);
+	public GroupResponse updateGroupName(Integer groupNumber, String newGroupName);
 	
 	// グループ分類の削除
 	public GroupResponse deleteGroup(List<Group> deleteGroupList);
+	
+	// 全グループの表示
+	public GroupResponse getAllGroup();
 
 }

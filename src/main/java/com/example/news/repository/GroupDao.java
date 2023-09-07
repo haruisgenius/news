@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.news.entity.Group;
 
 @Repository
-public interface GroupDao extends JpaRepository<Group, String> {
+public interface GroupDao extends JpaRepository<Group, Integer> {
 
 }
