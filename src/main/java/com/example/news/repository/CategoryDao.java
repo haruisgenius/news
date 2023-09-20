@@ -10,7 +10,19 @@ import com.example.news.entity.Category;
 @Repository
 public interface CategoryDao extends JpaRepository<Category, Integer> {
 	
-	//
-	public List<Category> findByCategoryGroupEquals(String categoryGroup);
+	// 某グループのカテゴリーの表示
+	public List<Category> findAllByCategoryGroupAndIsCategoryDeleteFalse(String categoryGroup);
+	
+	// 全カテゴリーの表示
+	public List<Category> findAllByIsCategoryDeleteFalse();
+	
+	// カテゴリー検索
+	public Category findByCategoryName(String categoryName);
+	
+	// 開放カテゴリー検索
+	public Category findByCategoryNameAndIsCategoryDeleteFalse(String categoryName);
+	
+	// カテゴリー名称で検索
+	public List<Category> findAllByCategoryNameAndIsCategoryDeleteFalse(List<String> categoryNameList);
 
 }

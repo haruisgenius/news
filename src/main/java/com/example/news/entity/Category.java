@@ -29,6 +29,10 @@ public class Category {
 	@Column(name = "amount")
 	private int amount = 0;
 
+	// カテゴリー削除 true>削除した
+	@Column(name = "is_category_delete")
+	private boolean isCategoryDelete = false;
+
 //	----------------------------------
 
 	public Category() {
@@ -36,14 +40,16 @@ public class Category {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Category(Integer categoryNumber, String categoryName, String categoryGroup, int amount) {
+	public Category(Integer categoryNumber, String categoryName, String categoryGroup, int amount,
+			boolean isCategoryDelete) {
 		super();
 		this.categoryNumber = categoryNumber;
 		this.categoryName = categoryName;
 		this.categoryGroup = categoryGroup;
 		this.amount = amount;
+		this.isCategoryDelete = isCategoryDelete;
 	}
-	
+
 	public Category(String categoryName, String categoryGroup, int amount) {
 		super();
 		this.categoryName = categoryName;
@@ -55,7 +61,7 @@ public class Category {
 		super();
 		this.categoryName = categoryName;
 	}
-	
+
 //	----------------------------------
 
 	public Integer getCategoryNumber() {
@@ -88,6 +94,14 @@ public class Category {
 
 	public void setAmount(int amount) {
 		this.amount = amount;
+	}
+
+	public boolean isCategoryDelete() {
+		return isCategoryDelete;
+	}
+
+	public void setCategoryDelete(boolean isCategoryDelete) {
+		this.isCategoryDelete = isCategoryDelete;
 	}
 
 }

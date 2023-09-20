@@ -36,30 +36,30 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 
 		// グループ 存在しているかどうか
-		List<Group> allGroup = groupDao.findAll();
-		List<String> allGroupStr = new ArrayList<>();
-		for(Group group : allGroup) {
-			allGroupStr.add(group.getGroupName());
-		}
-		if(!allGroupStr.contains(categoryGroup)) {
+		Group existedGroup = groupDao.findByGroupName(categoryGroup);
+		if(existedGroup != null) {
 			return new CategoryResponse(RtnCode.NOT_FOUND.getMessage());
 		}
-		
-		// カテゴリー 同じ名称存在しているかどうか
-		List<Category> allCategory = categoryDao.findAll();
-		if(allCategory.size() > 0 ) {
-			for(Category category : allCategory) {
-				if(category.getCategoryName().equals(categoryName)) {
-					return new CategoryResponse(RtnCode.DATA_EXISTED.getMessage());
-				}
-			}
+			
+		// 増やしたいカテゴリーと同じ名称グループ 存在しているかどうか
+		Group ctgNameGroup = groupDao.findByGroupName(categoryName);
+		if(ctgNameGroup != null) {
+			return new CategoryResponse(RtnCode.DATA_EXISTED.getMessage());
 		}
-
-		// グループと同じ名称存在しているかどうか
-		for(Group group : allGroup) {
-			if(group.getGroupName().equals(categoryName)) {
-				return new CategoryResponse(RtnCode.INCORRECT.getMessage());
+		
+		// 同じ名称カテゴリー 存在しているかどうか
+		Category existedCategory = categoryDao.findByCategoryName(categoryName);
+		//　カテゴリー存在
+		if(existedCategory != null) {
+			// カテゴリー未削除
+			if(!existedCategory.isCategoryDelete()) {
+				return new CategoryResponse(RtnCode.DATA_EXISTED.getMessage());
 			}
+			//  カテゴリー削除 > 開放
+			existedCategory.setCategoryDelete(true);
+			existedCategory.setCategoryGroup(categoryGroup);
+			categoryDao.save(existedCategory);
+			return new CategoryResponse(existedCategory, RtnCode.SUCCESSFUL.getMessage());
 		}
 		
 		int defaultAmount = 0;
@@ -88,20 +88,17 @@ public class CategoryServiceImpl implements CategoryService {
 			return new CategoryResponse(RtnCode.NOT_FOUND.getMessage());
 		}
 
+		// TODO
 		// 新しいカテゴリー名称 存在しているかどうか
-		List<Category> allCategory = categoryDao.findAll();
-		for(Category category : allCategory) {
-			if(category.getCategoryName().equals(newCategoryName)) {
-				return new CategoryResponse(RtnCode.DATA_EXISTED.getMessage());
-			}
+		Category existedCategory = categoryDao.findByCategoryName(newCategoryName);
+		if(existedCategory != null) {
+			return new CategoryResponse(RtnCode.DATA_EXISTED.getMessage());
 		}
 		
 		// グループに同じ名称存在しているかどうか
-		List<Group> allGroup = groupDao.findAll();
-		for(Group group : allGroup) {
-			if(group.getGroupName().equals(newCategoryName)) {
-				return new CategoryResponse(RtnCode.INCORRECT.getMessage());
-			}
+		Group existedGroup = groupDao.findByGroupName(newCategoryName);
+		if(existedGroup != null) {
+			return new CategoryResponse(RtnCode.DATA_EXISTED.getMessage());
 		}
 		
 		Category updateCategory = updateCategoryOp.get();
@@ -115,54 +112,45 @@ public class CategoryServiceImpl implements CategoryService {
 
 	// カテゴリー分類の削除
 	@Override
-	public CategoryResponse deleteCategory(List<Category> deleteCategoryList) {
-		// 全部のカテゴリー
-		List<Category> allCategoryList = categoryDao.findAll();
-		// 削除できるカテゴリーのリスト
-		List<Category> canDeleteCategoryList = new ArrayList<>();
+	public CategoryResponse deleteCategory(List<String> deleteCategoryStrList) {
 		// 入力したかどうか
-		if(deleteCategoryList.size() == 0) {
+		if(deleteCategoryStrList.size() == 0) {
 			return new CategoryResponse(RtnCode.CANNOT_EMPTY.getMessage());
 		}
 		
 		// 削除したいカテゴリー　存在しているかどうか
-		for(Category deleteCategory : deleteCategoryList) {
-			for(Category oldCategory : allCategoryList) {
-				if(deleteCategory.getCategoryName().equals(oldCategory.getCategoryName())) {
-					if(oldCategory.getAmount() != 0) {
-						return new CategoryResponse(RtnCode.INCORRECT.getMessage());
-					}
-					canDeleteCategoryList.add(oldCategory);
-				}
-			}
-		}
-		
-		if(canDeleteCategoryList.size() != deleteCategoryList.size()) {
+		List<Category> deleteCategoryList = categoryDao.findAllByCategoryNameAndIsCategoryDeleteFalse(deleteCategoryStrList);
+		if(deleteCategoryList.size() != deleteCategoryStrList.size()) {
 			return new CategoryResponse(RtnCode.NOT_FOUND.getMessage());
 		}
 		
-		// データベースへの削除
-		categoryDao.deleteAll(canDeleteCategoryList);
+		// 削除かどうか　> ture
+		for(Category deleteCategory : deleteCategoryList) {
+			deleteCategory.setCategoryDelete(true);
+		}
+		
+		// データベースへの保存
+		categoryDao.saveAll(deleteCategoryList);
 
 		return new CategoryResponse(RtnCode.SUCCESSFUL.getMessage());
 	}
 
 	// 全カテゴリーの表示
 	public CategoryResponse getAllCategory() {
-		List<Category> allCategory = categoryDao.findAll();	
+		List<Category> allCategory = categoryDao.findAllByIsCategoryDeleteFalse();	
 		return new CategoryResponse(allCategory, RtnCode.SUCCESSFUL.getMessage());
 	}
 
 	// 某グループのカテゴリーの表示
 	@Override
 	public CategoryResponse getCategoryInGroup(String categoryGroup) {
-		// 
+		// 入力かどうか
 		if(!StringUtils.hasText(categoryGroup)) {
 			return new CategoryResponse(RtnCode.CANNOT_EMPTY.getMessage());
 		}
 		
-		// 
-		List<Category> categoryInGroup = categoryDao.findByCategoryGroupEquals(categoryGroup);
+		// データベースへの検索
+		List<Category> categoryInGroup = categoryDao.findAllByCategoryGroupAndIsCategoryDeleteFalse(categoryGroup);
 		
 		return new CategoryResponse(categoryInGroup, RtnCode.SUCCESSFUL.getMessage());
 	}

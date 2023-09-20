@@ -25,6 +25,10 @@ public class Group {
 	@Column(name = "news_amount")
 	private int newsAmount = 0;
 
+	// 削除かどうか true>削除した
+	@Column(name = "is_group_delete")
+	private boolean isGroupDelete = false;
+
 //	----------------------------------
 
 	public Group() {
@@ -32,11 +36,12 @@ public class Group {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Group(Integer groupNumber, String groupName, int newsAmount) {
+	public Group(Integer groupNumber, String groupName, int newsAmount, boolean isGroupDelete) {
 		super();
 		this.groupNumber = groupNumber;
 		this.groupName = groupName;
 		this.newsAmount = newsAmount;
+		this.isGroupDelete = isGroupDelete;
 	}
 
 	public Group(String groupName, int newsAmount) {
@@ -49,16 +54,16 @@ public class Group {
 		super();
 		this.groupName = groupName;
 	}
-	
+
 //	----------------------------------
 
 	public Integer getGroupNumber() {
 		return groupNumber;
 	}
 
-	public void setGroupNumber(Integer groupNumber) {
-		this.groupNumber = groupNumber;
-	}
+//	public void setGroupNumber(Integer groupNumber) {
+//		this.groupNumber = groupNumber;
+//	}
 
 	public String getGroupName() {
 		return groupName;
@@ -74,6 +79,14 @@ public class Group {
 
 	public void setNewsAmount(int newsAmount) {
 		this.newsAmount = newsAmount;
+	}
+
+	public boolean isGroupDelete() {
+		return isGroupDelete;
+	}
+
+	public void setGroupDelete(boolean isGroupDelete) {
+		this.isGroupDelete = isGroupDelete;
 	}
 
 }

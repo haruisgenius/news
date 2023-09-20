@@ -14,7 +14,7 @@ public interface CategoryService {
 	public CategoryResponse updateCategory(Integer categoryNumber, String newCategoryName);
 
 	// カテゴリー分類の削除
-	public CategoryResponse deleteCategory(List<Category> deleteCategoryList);
+	public CategoryResponse deleteCategory(List<String> deleteCategoryStrList);
 	
 	// 全カテゴリーの表示
 	public CategoryResponse getAllCategory();
