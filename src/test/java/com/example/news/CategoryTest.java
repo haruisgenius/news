@@ -53,13 +53,13 @@ public class CategoryTest {
 	
 	@Test
 	public void deleteCategoryTest() {
-		List<Category> group1 = new ArrayList<>(Arrays.asList(new Category(" ")));
+		List<String> group1 = new ArrayList<>(Arrays.asList("", ""));
 		CategoryResponse res1 = cService.deleteCategory(group1);
 		System.out.println(res1.getMessage());
-		List<Category> group2 = new ArrayList<>(Arrays.asList(new Category("ayy")));
+		List<String> group2 = new ArrayList<>(Arrays.asList("ayy"));
 		CategoryResponse res2 = cService.deleteCategory(group2);
 		System.out.println(res2.getMessage());
-		List<Category> group3 = new ArrayList<>(Arrays.asList(new Category("zzz")));
+		List<String> group3 = new ArrayList<>(Arrays.asList("zzz"));
 		CategoryResponse res3 = cService.deleteCategory(group3);
 		System.out.println(res3.getMessage());
 	}
@@ -76,6 +76,12 @@ public class CategoryTest {
 		System.out.println(res1.getMessage());
 		CategoryResponse res2 = cService.getCategoryInGroup("be");
 		System.out.println(res2.getMessage());
+	}
+	
+	@Test
+	public void findByCategoryNameTest() {
+		Category category = cDao.findByCategoryName("ayy");
+		System.out.println(category.getCategoryGroup());
 	}
 
 }

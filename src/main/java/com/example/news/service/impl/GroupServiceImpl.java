@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.news.constants.Constant;
 import com.example.news.constants.RtnCode;
 import com.example.news.entity.Category;
 import com.example.news.entity.Group;
@@ -31,37 +32,14 @@ public class GroupServiceImpl implements GroupService {
 	// グループ分類の新規登録
 	@Override
 	public GroupResponse createGroup(String groupName) {
-		// グループ名称 入力したかどうか
-		if (!StringUtils.hasText(groupName)) {
-			return new GroupResponse(RtnCode.CANNOT_EMPTY.getMessage());
+		// グループ名称 チェック
+		GroupResponse checkGroupNameResult = checkGroupName(groupName);
+		if(checkGroupNameResult != null) {
+			return checkGroupNameResult;
 		}
-
-		// グループ分類 存在しているかどうか
-		Group existedGroup = groupDao.findByGroupName(groupName);
-		if (existedGroup != null) {
-			// グループ未削除
-			if(!existedGroup.isGroupDelete()) {
-				return new GroupResponse(RtnCode.DATA_EXISTED.getMessage());
-			}
-			
-			// グループ削除
-			if(existedGroup.isGroupDelete()) {
-				existedGroup.setGroupDelete(false);
-				groupDao.save(existedGroup);
-				return new GroupResponse(RtnCode.SUCCESSFUL.getMessage());
-			}
-		}
-		
-		// カテゴリーと同じ名称かどうか
-		Category existedCategory = categoryDao.findByCategoryName(groupName);
-		if (existedCategory != null) {
-			return new GroupResponse(RtnCode.DATA_EXISTED.getMessage());
-		}
-		
-		int defaultAmount = 0;
 
 		// データベースへの保存
-		Group group = new Group(groupName, defaultAmount);
+		Group group = new Group(groupName, Constant.defaultNewsAmount.getDefaultAmount());
 		groupDao.save(group);
 
 		return new GroupResponse(group, RtnCode.SUCCESSFUL.getMessage());
@@ -74,10 +52,10 @@ public class GroupServiceImpl implements GroupService {
 		if(groupNumber == null) {
 			return new GroupResponse(RtnCode.CANNOT_EMPTY.getMessage());
 		}
-		
-		// 新しい名称入力したかどうか
-		if (!StringUtils.hasText(newGroupName)) {
-			return new GroupResponse(RtnCode.CANNOT_EMPTY.getMessage());
+		// 入力したかどうか
+		GroupResponse checkGroupNameResult = checkGroupName(newGroupName);
+		if(checkGroupNameResult != null) {
+			return checkGroupNameResult;
 		}
 
 		// 編集したいグループ 存在しているかどうか
@@ -87,19 +65,15 @@ public class GroupServiceImpl implements GroupService {
 		}
 		
 		// 新しいグループ名称 カテゴリーに存在しているかどうか
-		Category existedCategory = categoryDao.findByCategoryNameAndIsCategoryDeleteFalse(newGroupName);
-		if(existedCategory != null) {
-			return new GroupResponse(RtnCode.DATA_EXISTED.getMessage());
+		GroupResponse checkCategoryDatabaseResult = checkNameInCategory(newGroupName);
+		if(checkCategoryDatabaseResult != null) {
+			return checkCategoryDatabaseResult;
 		}
 
 		// 新しいグループ名称 存在しているかどうか
-		Group existedGroup = groupDao.findByGroupName(newGroupName);
-		// 存在
-		if(existedGroup != null) {
-			// 開放している
-			if(!existedGroup.isGroupDelete()) {
-				return new GroupResponse(RtnCode.DATA_EXISTED.getMessage());
-			}
+		GroupResponse checkGroupDatabaseResult = checkNameInGroup(newGroupName);
+		if(checkGroupDatabaseResult != null) {
+			return checkGroupDatabaseResult;
 		}
 		
 
@@ -117,12 +91,19 @@ public class GroupServiceImpl implements GroupService {
 	public GroupResponse deleteGroup(List<String> deleteGroupStrList) {
 		
 		// 入力したかどうか
-		if (deleteGroupStrList.size() == 0) {
-			return new GroupResponse(RtnCode.CANNOT_EMPTY.getMessage());
+		for(String deleteGroupStr : deleteGroupStrList) {
+			GroupResponse checkGroupNameResult = checkGroupName(deleteGroupStr);
+			if(checkGroupNameResult != null) {
+				return checkGroupNameResult;
+			}
 		}
 
 		// 削除したいグループ 存在しているかどうか
 		List<Group> deleteGroupList = groupDao.findAllByGroupNameAndIsGroupDeleteFalse(deleteGroupStrList);
+		if(deleteGroupList.size() != deleteGroupStrList.size()) {
+			return new GroupResponse(RtnCode.NOT_FOUND.getMessage());
+		}
+		
 		// データベースへの削除
 		for(Group group : deleteGroupList) {
 			group.setGroupDelete(true);
@@ -148,5 +129,40 @@ public class GroupServiceImpl implements GroupService {
 		Group group = groupDao.findByGroupNameAndIsGroupDeleteFalse(groupName);
 		return new GroupResponse(group, RtnCode.SUCCESSFUL.getMessage());
 	}
+	
+	// -----------------------------
+	
+	// 入力かどうか　チェック
+	private GroupResponse checkGroupName(String gorupName) {
+		if(!StringUtils.hasText(gorupName)) {
+			return new GroupResponse(RtnCode.CANNOT_EMPTY.getMessage());
+		}
+		
+		return null;
+	}
+	
+	// カテゴリーデータベース　チェック
+	private GroupResponse checkNameInCategory(String groupName) {
+		// 同じカテゴリー確認
+		Category sameNameCategory = categoryDao.findByCategoryNameAndIsCategoryDeleteFalse(groupName);
+		if(sameNameCategory != null) {
+			return new GroupResponse(RtnCode.DATA_EXISTED.getMessage());
+		}
+		
+		return null;
+	}
+	
+	// グループデータベース　チェック
+	private GroupResponse checkNameInGroup(String groupName) {
+		// 同じグループ確認
+		Group existedGroup = groupDao.findByGroupNameAndIsGroupDeleteFalse(groupName);
+		if(existedGroup != null) {
+			return new GroupResponse(RtnCode.DATA_EXISTED.getMessage());
+		}
+		
+		return null;
+	}
+	
+	
 
 }

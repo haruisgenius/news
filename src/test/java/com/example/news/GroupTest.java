@@ -51,16 +51,16 @@ public class GroupTest {
 	
 	@Test
 	public void deleteGroupTest() {
-		List<Group> group1 = new ArrayList<>(Arrays.asList(new Group("AAA")));
+		List<String> group1 = new ArrayList<>(Arrays.asList("AAA"));
 		GroupResponse res1 = gService.deleteGroup(group1);
 		System.out.println(res1.getMessage());
-		List<Group> group2 = new ArrayList<>(Arrays.asList(new Group("")));
+		List<String> group2 = new ArrayList<>(Arrays.asList(""));
 		GroupResponse res2 = gService.deleteGroup(group2);
 		System.out.println(res2.getMessage());
-		List<Group> group3 = new ArrayList<>(Arrays.asList(new Group("ERR"), new Group("CCA")));
+		List<String> group3 = new ArrayList<>(Arrays.asList("ERR","CCA"));
 		GroupResponse res3 = gService.deleteGroup(group3);
 		System.out.println(res3.getMessage());
-		List<Group> group4 = new ArrayList<>(Arrays.asList(new Group("CCA")));
+		List<String> group4 = new ArrayList<>(Arrays.asList("CCA"));
 		GroupResponse res4 = gService.deleteGroup(group4);
 		System.out.println(res4.getMessage());
 	}
@@ -68,6 +68,12 @@ public class GroupTest {
 	@Test
 	public void findAllGroupTest() {
 		GroupResponse res1 = gService.getAllGroup();
+		System.out.println(res1.getMessage());
+	}
+	
+	@Test
+	public void findOneGroupTet() {
+		GroupResponse res1 = gService.getOneGroup("CCA");
 		System.out.println(res1.getMessage());
 	}
 	
