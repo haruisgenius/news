@@ -99,7 +99,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 
 		// 削除したいグループ 存在しているかどうか
-		List<Group> deleteGroupList = groupDao.findAllByGroupNameAndIsGroupDeleteFalse(deleteGroupStrList);
+		List<Group> deleteGroupList = groupDao.findAllByGroupNameInAndIsGroupDeleteFalse(deleteGroupStrList);
 		if(deleteGroupList.size() != deleteGroupStrList.size()) {
 			return new GroupResponse(RtnCode.NOT_FOUND.getMessage());
 		}

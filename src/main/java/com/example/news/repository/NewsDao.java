@@ -11,13 +11,13 @@ import com.example.news.entity.News;
 public interface NewsDao extends JpaRepository<News, Integer> {
 
 	// ニュースナンバーでニュース（開放中）検索　>　削除or閉鎖
-	public List<News> findAllByNewsNumberAndIsNewsDeleteFalse(List<Integer> deleteNewsNumberList);
+	public List<News> findAllByNewsNumberInAndIsNewsDeleteFalse(List<Integer> deleteNewsNumberList);
 	
 	// 全ニュース（(開放中&閉鎖)）を表示 > 管理者
 	public List<News> findAllByIsNewsDeleteFalse();
 	
 	// ニュース検索（開放中） > ユーザー&管理者
-	public News findByIdAndIsNewsDeleteFalse(Integer newsNumber);
+	public News findByNewsNumberAndIsNewsDeleteFalse(Integer newsNumber);
 	
 	// 全ニュース（開放中）を表示　>　ユーザー
 	public News findAllByIsNewsDeleteFalseAndIsOpenTrue();

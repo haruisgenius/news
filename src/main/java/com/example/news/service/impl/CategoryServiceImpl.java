@@ -119,7 +119,7 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 		
 		// 削除したいカテゴリー　存在しているかどうか
-		List<Category> deleteCategoryList = categoryDao.findAllByCategoryNameAndIsCategoryDeleteFalse(deleteCategoryStrList);
+		List<Category> deleteCategoryList = categoryDao.findAllByCategoryNameInAndIsCategoryDeleteFalse(deleteCategoryStrList);
 		if(deleteCategoryList.size() != deleteCategoryStrList.size()) {
 			return new CategoryResponse(RtnCode.NOT_FOUND.getMessage());
 		}

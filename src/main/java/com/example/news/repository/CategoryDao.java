@@ -23,6 +23,6 @@ public interface CategoryDao extends JpaRepository<Category, Integer> {
 	public Category findByCategoryNameAndIsCategoryDeleteFalse(String categoryName);
 	
 	// カテゴリー名称で検索
-	public List<Category> findAllByCategoryNameAndIsCategoryDeleteFalse(List<String> categoryNameList);
+	public List<Category> findAllByCategoryNameInAndIsCategoryDeleteFalse(List<String> categoryNameList);
 
 }

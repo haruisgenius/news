@@ -158,7 +158,7 @@ public class NewsServiceImpl implements NewsService {
 	@Override
 	public NewsResponse deleteNews(List<Integer> deleteNewsNumberList) {
 		// 存在かつ開放中かどうか
-		List<News> deleteNewsList = newsDao.findAllByNewsNumberAndIsNewsDeleteFalse(deleteNewsNumberList);
+		List<News> deleteNewsList = newsDao.findAllByNewsNumberInAndIsNewsDeleteFalse(deleteNewsNumberList);
 		if(deleteNewsList.size() != deleteNewsNumberList.size()) {
 			return new NewsResponse(RtnCode.NOT_FOUND.getMessage());
 		}
@@ -168,7 +168,7 @@ public class NewsServiceImpl implements NewsService {
 		for(News deleteNews : deleteNewsList) {
 			deleteGroupNameList.add(deleteNews.getNewsGroup());
 		}
-		List<Group> deleteGroupList = groupDao.findAllByGroupNameAndIsGroupDeleteFalse(deleteGroupNameList);
+		List<Group> deleteGroupList = groupDao.findAllByGroupNameInAndIsGroupDeleteFalse(deleteGroupNameList);
 		for(Group deleteGroup : deleteGroupList) {
 			deleteGroup.setNewsAmount(deleteGroup.getNewsAmount() - 1);
 		}
@@ -179,7 +179,7 @@ public class NewsServiceImpl implements NewsService {
 		for(News deleteNews : deleteNewsList) {
 			deleteCategoryNameList.add(deleteNews.getCategory());
 		}
-		List<Category> deleteCategoryList = categoryDao.findAllByCategoryNameAndIsCategoryDeleteFalse(deleteCategoryNameList);
+		List<Category> deleteCategoryList = categoryDao.findAllByCategoryNameInAndIsCategoryDeleteFalse(deleteCategoryNameList);
 		for(Category deleteCategory : deleteCategoryList) {
 			deleteCategory.setAmount(deleteCategory.getAmount() - 1);
 		}
@@ -204,7 +204,7 @@ public class NewsServiceImpl implements NewsService {
 		}
 		
 		// 検索
-		News findNews = newsDao.findByIdAndIsNewsDeleteFalse(newsNumber);
+		News findNews = newsDao.findByNewsNumberAndIsNewsDeleteFalse(newsNumber);
 		if(findNews == null) {
 			return new NewsResponse(RtnCode.NOT_FOUND.getMessage());
 		}
@@ -230,7 +230,7 @@ public class NewsServiceImpl implements NewsService {
 		}
 		
 		// 検索
-		List<News> allCloseNewsList = newsDao.findAllByNewsNumberAndIsNewsDeleteFalse(newsNumberList);
+		List<News> allCloseNewsList = newsDao.findAllByNewsNumberInAndIsNewsDeleteFalse(newsNumberList);
 		if(allCloseNewsList.size() != newsNumberList.size()) {
 			return new NewsResponse(RtnCode.NOT_FOUND.getMessage());
 		}
@@ -256,7 +256,7 @@ public class NewsServiceImpl implements NewsService {
 		}
 		
 		// 検索
-		List<News> allOpenNewsList = newsDao.findAllByNewsNumberAndIsNewsDeleteFalse(newsNumberList);
+		List<News> allOpenNewsList = newsDao.findAllByNewsNumberInAndIsNewsDeleteFalse(newsNumberList);
 		if(allOpenNewsList.size() != newsNumberList.size()) {
 			return new NewsResponse(RtnCode.NOT_FOUND.getMessage());
 		}
@@ -355,7 +355,7 @@ public class NewsServiceImpl implements NewsService {
 			// カテゴリー名称リスト
 			List<String> categoryNameStringList = new ArrayList<>(Arrays.asList(newCategory, oldNews.getCategory()));
 			// 変更カテゴリーリスト
-			List<Category> updateCategoryList = categoryDao.findAllByCategoryNameAndIsCategoryDeleteFalse(categoryNameStringList);
+			List<Category> updateCategoryList = categoryDao.findAllByCategoryNameInAndIsCategoryDeleteFalse(categoryNameStringList);
 			// カテゴリー存在しない
 			if(updateCategoryList.size() != categoryNameStringList.size()) {
 				return new NewsResponse(RtnCode.NOT_FOUND.getMessage());
@@ -368,7 +368,7 @@ public class NewsServiceImpl implements NewsService {
 			for(Category updateCategory : updateCategoryList) {
 				groupNameStringList.add(updateCategory.getCategoryGroup());
 			}
-			List<Group> updateGroupList = groupDao.findAllByGroupNameAndIsGroupDeleteFalse(groupNameStringList);
+			List<Group> updateGroupList = groupDao.findAllByGroupNameInAndIsGroupDeleteFalse(groupNameStringList);
 			// グループ存在しない
 			if(updateGroupList.size() != groupNameStringList.size()) {
 				return new NewsResponse(RtnCode.NOT_FOUND.getMessage());

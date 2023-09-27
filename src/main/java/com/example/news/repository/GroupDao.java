@@ -20,6 +20,6 @@ public interface GroupDao extends JpaRepository<Group, Integer> {
 	public List<Group> findAllByIsGroupDeleteFalse();
 	
 	// 全開放中グループを名称で検索
-	public List<Group> findAllByGroupNameAndIsGroupDeleteFalse(List<String> groupNameList);
+	public List<Group> findAllByGroupNameInAndIsGroupDeleteFalse(List<String> groupNameList);
 
 }
