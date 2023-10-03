@@ -20,5 +20,11 @@ public interface NewsDao extends JpaRepository<News, Integer> {
 	public News findByNewsNumberAndIsNewsDeleteFalse(Integer newsNumber);
 	
 	// 全ニュース（開放中）を表示　>　ユーザー
-	public News findAllByIsNewsDeleteFalseAndIsOpenTrue();
+	public List<News> findAllByIsNewsDeleteFalseAndIsOpenTrue();
+	
+	// 某グループのニュースを検索
+	public List<News> findAllByNewsGroupAndIsNewsDeleteFalse(String newsGroup);
+	
+	// 
+	public List<News> findAllByCategoryAndIsNewsDeleteFalse(String category);
 }

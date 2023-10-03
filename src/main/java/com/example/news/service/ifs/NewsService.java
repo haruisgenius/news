@@ -34,4 +34,13 @@ public interface NewsService {
 	// ニュースをオート開放
 	public NewsResponse autoSetOpen();
 	
+	// ニュースの表示 > 使用者
+	public NewsResponse findAllNewsCanSee();
+	
+	// グループでニュース検索 > 管理者
+	public NewsResponse findAllNewsInGroup(String newsGroup);
+	
+	// カテゴリーでニュース検索 > 管理者
+	public NewsResponse findAllNewsInCategory(String category);
+	
 }

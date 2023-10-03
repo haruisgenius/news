@@ -11,8 +11,10 @@ import org.springframework.util.StringUtils;
 import com.example.news.constants.RtnCode;
 import com.example.news.entity.Category;
 import com.example.news.entity.Group;
+import com.example.news.entity.News;
 import com.example.news.repository.CategoryDao;
 import com.example.news.repository.GroupDao;
+import com.example.news.repository.NewsDao;
 import com.example.news.service.ifs.CategoryService;
 import com.example.news.vo.CategoryResponse;
 
@@ -24,6 +26,9 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
 	private CategoryDao categoryDao;
+	
+	@Autowired
+	private NewsDao newsDao;
 
 	// ---------------------------
 
@@ -35,14 +40,14 @@ public class CategoryServiceImpl implements CategoryService {
 			return new CategoryResponse(RtnCode.CANNOT_EMPTY.getMessage());
 		}
 
-		// グループ 存在しているかどうか
-		Group existedGroup = groupDao.findByGroupName(categoryGroup);
-		if(existedGroup != null) {
+		// 所属グループ 存在しているかどうか
+		Group existedGroup = groupDao.findByGroupNameAndIsGroupDeleteFalse(categoryGroup);
+		if(existedGroup == null) {
 			return new CategoryResponse(RtnCode.NOT_FOUND.getMessage());
 		}
 			
 		// 増やしたいカテゴリーと同じ名称グループ 存在しているかどうか
-		Group ctgNameGroup = groupDao.findByGroupName(categoryName);
+		Group ctgNameGroup = groupDao.findByGroupNameAndIsGroupDeleteFalse(categoryName);
 		if(ctgNameGroup != null) {
 			return new CategoryResponse(RtnCode.DATA_EXISTED.getMessage());
 		}
@@ -88,7 +93,6 @@ public class CategoryServiceImpl implements CategoryService {
 			return new CategoryResponse(RtnCode.NOT_FOUND.getMessage());
 		}
 
-		// TODO
 		// 新しいカテゴリー名称 存在しているかどうか
 		Category existedCategory = categoryDao.findByCategoryName(newCategoryName);
 		if(existedCategory != null) {
@@ -102,6 +106,15 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 		
 		Category updateCategory = updateCategoryOp.get();
+		
+		// News
+		if(updateCategory.getAmount() > 0) {
+			List<News> allNewsInCategory = newsDao.findAllByCategoryAndIsNewsDeleteFalse(updateCategory.getCategoryName());
+				for(News news : allNewsInCategory) {
+					news.setCategory(newCategoryName);
+				}
+			newsDao.saveAll(allNewsInCategory);
+		}
 
 		// データベースへの保存
 		updateCategory.setCategoryName(newCategoryName);
@@ -122,6 +135,13 @@ public class CategoryServiceImpl implements CategoryService {
 		List<Category> deleteCategoryList = categoryDao.findAllByCategoryNameInAndIsCategoryDeleteFalse(deleteCategoryStrList);
 		if(deleteCategoryList.size() != deleteCategoryStrList.size()) {
 			return new CategoryResponse(RtnCode.NOT_FOUND.getMessage());
+		}
+		
+		// 文章数0以上かどうか
+		for(Category deleteCategory : deleteCategoryList) {
+			if(deleteCategory.getAmount() > 0) {
+				return new CategoryResponse(RtnCode.INCORRECT.getMessage());
+			}
 		}
 		
 		// 削除かどうか　> ture

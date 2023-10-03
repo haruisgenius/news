@@ -56,7 +56,7 @@ public class NewsServiceImpl implements NewsService {
 			return checkCategoryResult;
 		}
 
-		// TODO
+		
 		// カテゴリー　存在かどうか
 		Category saveCategory = categoryDao.findByCategoryName(category);
 		if(saveCategory == null) {
@@ -289,10 +289,56 @@ public class NewsServiceImpl implements NewsService {
 		
 		return new NewsResponse(allNews, RtnCode.SUCCESSFUL.getMessage());
 	}
+	
+	// ニュースの表示 > 使用者
+	@Override
+	public NewsResponse findAllNewsCanSee() {
+		// 
+		List<News> allNewsCanSee = newsDao.findAllByIsNewsDeleteFalseAndIsOpenTrue();
+		return new NewsResponse(allNewsCanSee, RtnCode.SUCCESSFUL.getMessage());
+	}
+	
+	
+	public NewsResponse findAllNewsInGroup(String newsGroup) {
+		// 入力かどうか
+		NewsResponse checkGroupResult = checkGroup(newsGroup);
+		if(checkGroupResult != null) {
+			return checkGroupResult;
+		}
+		
+		Group findGroup = groupDao.findByGroupNameAndIsGroupDeleteFalse(newsGroup);
+		if(findGroup == null) {
+			return new NewsResponse(RtnCode.NOT_FOUND.getMessage());
+		}
+		
+		List<News> allNewsInGroupList = newsDao.findAllByNewsGroupAndIsNewsDeleteFalse(newsGroup);
+		
+		return new NewsResponse(allNewsInGroupList, RtnCode.SUCCESSFUL.getMessage());
+	}
+	
+	
+	// カテゴリーでニュース検索 > 管理者
+	public NewsResponse findAllNewsInCategory(String category) {
+		// 入力かどうか
+		NewsResponse checkCategoryResult = checkCategory(category);
+		if(checkCategoryResult != null) {
+			return checkCategoryResult;
+		}
+		
+		Category findCategory = categoryDao.findByCategoryNameAndIsCategoryDeleteFalse(category);
+		if(findCategory == null) {
+			return new NewsResponse(RtnCode.NOT_FOUND.getMessage());
+		}
+		
+		List<News> allNewsInCategory = newsDao.findAllByCategoryAndIsNewsDeleteFalse(category);
+		
+		return new NewsResponse(allNewsInCategory, RtnCode.SUCCESSFUL.getMessage());
+	}
+	
 
 	// -------------------------------------
 	
-	// タイトルチェック
+	// タイトル・サブタイトル チェック
 	private NewsResponse checkTitle(String title, String subTitle) {
 		// 入力かどうか
 		if(!StringUtils.hasText(title) || !StringUtils.hasText(subTitle)) {
@@ -312,6 +358,16 @@ public class NewsServiceImpl implements NewsService {
 		// リリース日　本日より前かどうか
 		if(releaseDate.isBefore(Constant.Today.getDate())) {
 			return new NewsResponse(RtnCode.INCORRECT.getMessage());
+		}
+		
+		return null;
+	}
+	
+	// グループチェック
+	private NewsResponse checkGroup(String newsGroup) {
+		// 入力かどうか
+		if(!StringUtils.hasText(newsGroup)) {
+			return new NewsResponse(RtnCode.CANNOT_EMPTY.getMessage());
 		}
 		
 		return null;
@@ -410,6 +466,8 @@ public class NewsServiceImpl implements NewsService {
 		
 		return null;
 	}
+
+
 	
 	
 	

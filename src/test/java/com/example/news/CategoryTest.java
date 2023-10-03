@@ -31,7 +31,7 @@ public class CategoryTest {
 		System.out.println(res2.getMessage());
 		CategoryResponse res3 = cService.createCategory("eee", "ZZ");
 		System.out.println(res3.getMessage());
-		CategoryResponse res4 = cService.createCategory("ayy", "CCA");
+		CategoryResponse res4 = cService.createCategory("AAA", "CCA");
 		System.out.println(res4.getMessage());
 		CategoryResponse res5 = cService.createCategory("zzz", "AAA");
 		System.out.println(res5.getMessage());
@@ -45,9 +45,9 @@ public class CategoryTest {
 		System.out.println(res1.getMessage());
 		CategoryResponse res2 = cService.updateCategory(1, " ");
 		System.out.println(res2.getMessage());
-		CategoryResponse res3 = cService.updateCategory(1, "zzz");
+		CategoryResponse res3 = cService.updateCategory(0, "zzz");
 		System.out.println(res3.getMessage());
-		CategoryResponse res4 = cService.updateCategory(2, "wow");
+		CategoryResponse res4 = cService.updateCategory(1, "aaa");
 		System.out.println(res4.getMessage());
 	}
 	
@@ -56,10 +56,10 @@ public class CategoryTest {
 		List<String> group1 = new ArrayList<>(Arrays.asList("", ""));
 		CategoryResponse res1 = cService.deleteCategory(group1);
 		System.out.println(res1.getMessage());
-		List<String> group2 = new ArrayList<>(Arrays.asList("ayy"));
+		List<String> group2 = new ArrayList<>(Arrays.asList("ss8"));
 		CategoryResponse res2 = cService.deleteCategory(group2);
 		System.out.println(res2.getMessage());
-		List<String> group3 = new ArrayList<>(Arrays.asList("zzz"));
+		List<String> group3 = new ArrayList<>(Arrays.asList("a11"));
 		CategoryResponse res3 = cService.deleteCategory(group3);
 		System.out.println(res3.getMessage());
 	}
@@ -70,6 +70,7 @@ public class CategoryTest {
 		System.out.println(res1.getMessage());
 	}
 	
+	// 某グループの所属カテゴリー
 	@Test
 	public void getCategoryInGroupTest() {
 		CategoryResponse res1 = cService.getCategoryInGroup("");
@@ -78,6 +79,7 @@ public class CategoryTest {
 		System.out.println(res2.getMessage());
 	}
 	
+	// JPAテスト
 	@Test
 	public void findByCategoryNameTest() {
 		Category category = cDao.findByCategoryName("ayy");

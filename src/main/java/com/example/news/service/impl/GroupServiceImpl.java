@@ -12,8 +12,10 @@ import com.example.news.constants.Constant;
 import com.example.news.constants.RtnCode;
 import com.example.news.entity.Category;
 import com.example.news.entity.Group;
+import com.example.news.entity.News;
 import com.example.news.repository.CategoryDao;
 import com.example.news.repository.GroupDao;
+import com.example.news.repository.NewsDao;
 import com.example.news.service.ifs.GroupService;
 import com.example.news.vo.CategoryResponse;
 import com.example.news.vo.GroupResponse;
@@ -26,6 +28,9 @@ public class GroupServiceImpl implements GroupService {
 
 	@Autowired
 	private CategoryDao categoryDao;
+	
+	@Autowired
+	private NewsDao newsDao;
 
 	// -------------------------------------
 
@@ -36,6 +41,18 @@ public class GroupServiceImpl implements GroupService {
 		GroupResponse checkGroupNameResult = checkGroupName(groupName);
 		if(checkGroupNameResult != null) {
 			return checkGroupNameResult;
+		}
+		
+		// 
+		GroupResponse checkInGroupResult = checkNameInGroup(groupName);
+		if(checkInGroupResult != null) {
+			return checkInGroupResult;
+		}
+		
+		// 
+		GroupResponse checkInCategoryResult = checkNameInCategory(groupName);
+		if(checkInCategoryResult != null) {
+			return checkInCategoryResult;
 		}
 
 		// データベースへの保存
@@ -78,10 +95,28 @@ public class GroupServiceImpl implements GroupService {
 		
 
 		Group updateGroup = oldGroupOp.get();
-
+		// カテゴリー　所属グループ変更
+		List<Category> allCategoryInGroup = categoryDao.findAllByCategoryGroupAndIsCategoryDeleteFalse(updateGroup.getGroupName());
+		if(allCategoryInGroup.size() > 0) {
+			for(Category category : allCategoryInGroup) {
+				category.setCategoryGroup(newGroupName);
+			}
+		}
+		categoryDao.saveAll(allCategoryInGroup);
+		
+		// ニュース　所属グループ変更
+		if(updateGroup.getNewsAmount() > 0) {
+			List<News> allNewsInGroup = newsDao.findAllByNewsGroupAndIsNewsDeleteFalse(updateGroup.getGroupName());
+				for(News news : allNewsInGroup) {
+					news.setNewsGroup(newGroupName);
+				}
+			newsDao.saveAll(allNewsInGroup);
+		}
+		
 		// 編集したいグループ名称 新しい名称の保存
 		updateGroup.setGroupName(newGroupName);
 		groupDao.save(updateGroup);
+		
 
 		return new GroupResponse(updateGroup, RtnCode.SUCCESSFUL.getMessage());
 	}
@@ -104,6 +139,13 @@ public class GroupServiceImpl implements GroupService {
 			return new GroupResponse(RtnCode.NOT_FOUND.getMessage());
 		}
 		
+		// 文章数0以上かどうか
+		for(Group group : deleteGroupList) {
+			if(group.getNewsAmount() > 0) {
+				return new GroupResponse(RtnCode.INCORRECT.getMessage());
+			}
+		}
+		
 		// データベースへの削除
 		for(Group group : deleteGroupList) {
 			group.setGroupDelete(true);
@@ -120,12 +162,16 @@ public class GroupServiceImpl implements GroupService {
 		return new GroupResponse(allGroup, RtnCode.SUCCESSFUL.getMessage());
 	}
 
+	// グループの表示
 	@Override
 	public GroupResponse getOneGroup(String groupName) {
-		// 
-		if(!StringUtils.hasText(groupName)) {
-			return new GroupResponse(RtnCode.CANNOT_EMPTY.getMessage());
+		// 入力チェック
+		GroupResponse checkGroupNameResult = checkGroupName(groupName);
+		if(checkGroupNameResult != null) {
+			return checkGroupNameResult;
 		}
+		
+		// 
 		Group group = groupDao.findByGroupNameAndIsGroupDeleteFalse(groupName);
 		return new GroupResponse(group, RtnCode.SUCCESSFUL.getMessage());
 	}

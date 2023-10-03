@@ -1,12 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
 <meta charset="UTF-8">
 <title>News Page - user</title>
+<link rel="stylesheet" type="text/css" href="../static/homeStyle.css" />
+
 </head>
+
 <body>
 
-<h1>最新消息</h1>
+	<h1>最新消息</h1>
+	<button type="button" id="console">console</button>
+	
+	<hr>
 
+	<div class="findArea">
+		<div class="keywordFind">
+			<label>關鍵字</label> <input type="text">
+		</div>
+		<div class="groupFind">
+			<label>大分類</label>
+			<select>
+				<option value="">A</option>
+				<option value="">B</option>
+				<option value="">C</option>
+				<option value="">D</option>
+			</select>
+		</div>
+		<div class="categoryFind">
+			<label>小分類</label>
+			<select>
+				<option value="">a</option>
+				<option value="">b</option>
+				<option value="">c</option>
+				<option value="">d</option>
+			</select>
+		</div>
+		<div class="timeFind">
+			<label>發布時間區間</label>
+			<input type="date">
+			<label>~</label>
+			<input type="date">
+		</div>
+		
+	</div>
+	
+	<hr>
+
+	<table class="newsTable">
+		<thead>
+			<tr>
+				<th>Group</th>
+				<th>Category</th>
+				<th>Title</th>
+				<th>Update date</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			<tr>
+				<td>Group1</td>
+				<td>Category1</td>
+				<td>News1</td>
+				<td>2023/09/28</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+
+
+
+
+<script type="text/javascript" src="../static/js/homeJs.js"></script>
 </body>
+
 </html>
